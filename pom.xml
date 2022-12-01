@@ -6,7 +6,7 @@
 
     <groupId>io.github.leeyxq</groupId>
     <artifactId>prom-sql</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>prom-sql-helper</name>
     <description>Generate sql for prometheus conveniently, quickly and flexibly</description>
     <url>https://github.com/leeyxq/prom-sql</url>

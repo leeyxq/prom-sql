@@ -15,7 +15,7 @@
     <groupId>io.github.leeyxq</groupId>
     <artifactId>prom-sql</artifactId>
     <scope>compile</scope>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
 </dependency>
 ```
 
@@ -111,5 +111,13 @@ String promSql=PromHelper.sqlBuilder()
         .metric("http_requests_total")
         .topk(10)
         .build();
+        
+// 所支持条件查询方法有以下：
+        PromSqlBuilder eq(boolean condition, final String label, final String value)： 可选参数condition – 是否执行，以下类似
+        PromSqlBuilder notEq(boolean condition, final String label, final String value)
+        PromSqlBuilder empty(boolean condition, String label)
+        PromSqlBuilder notEmpty(boolean condition, String label)
+        PromSqlBuilder regex(boolean condition, String label, String value)
+        PromSqlBuilder notRegex(boolean condition, String label, String value)
 
 ```

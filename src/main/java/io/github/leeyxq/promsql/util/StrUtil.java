@@ -12,7 +12,9 @@ import java.util.StringTokenizer;
  * @since 2022/11/23 08:58
  */
 @UtilityClass
-public class StringUtil {
+public class StrUtil {
+    public static final String EMPTY = "";
+
     public static boolean isNotBlank(String str) {
         return str != null && !str.trim().isEmpty();
     }

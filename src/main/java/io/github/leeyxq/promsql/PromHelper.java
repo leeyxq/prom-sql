@@ -1,11 +1,14 @@
 package io.github.leeyxq.promsql;
 
 import io.github.leeyxq.promsql.util.Asserts;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import io.github.leeyxq.promsql.util.StrUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -67,36 +70,75 @@ public class PromHelper {
             return this;
         }
 
-         //==================查询条件-开始==================
+        //==================查询条件-开始==================
         public PromSqlBuilder eq(final String label, final String value) {
+            return eq(true, label, value);
+        }
+
+        public PromSqlBuilder eq(boolean condition, final String label, final String value) {
             Asserts.notBlank(label, "label must not be empty");
-            Asserts.notNull(value, "value must not be null");
+            if (!condition) {
+                return this;
+            }
             opCaches.add(new LabelOp("=", label, value));
             return this;
         }
 
-        public PromSqlBuilder empty(String label) {
-            return eq(label, "");
-        }
-
-        public PromSqlBuilder notEmpty(String label) {
-            return notEq(label, "");
-        }
-
         public PromSqlBuilder notEq(String label, String value) {
+            return notEq(true, label, value);
+        }
+
+        public PromSqlBuilder notEq(boolean condition, final String label, final String value) {
+            Asserts.notBlank(label, "label must not be empty");
+            if (!condition) {
+                return this;
+            }
             opCaches.add(new LabelOp("!=", label, value));
             return this;
         }
 
+        public PromSqlBuilder empty(String label) {
+            return eq(label, StrUtil.EMPTY);
+        }
+
+        public PromSqlBuilder empty(boolean condition, String label) {
+            return eq(condition, label, StrUtil.EMPTY);
+        }
+
+        public PromSqlBuilder notEmpty(String label) {
+            return notEq(label, StrUtil.EMPTY);
+        }
+
+        public PromSqlBuilder notEmpty(boolean condition, String label) {
+            return notEq(condition, label, StrUtil.EMPTY);
+        }
+
         public PromSqlBuilder regex(String label, String value) {
+            return regex(true, label, value);
+        }
+
+        public PromSqlBuilder regex(boolean condition, String label, String value) {
+            Asserts.notBlank(label, "label must not be empty");
+            if (!condition) {
+                return this;
+            }
             opCaches.add(new LabelOp("=~", label, value));
             return this;
         }
 
         public PromSqlBuilder notRegex(String label, String value) {
+            return notRegex(true, label, value);
+        }
+
+        public PromSqlBuilder notRegex(boolean condition, String label, String value) {
+            Asserts.notBlank(label, "label must not be empty");
+            if (!condition) {
+                return this;
+            }
             opCaches.add(new LabelOp("!~", label, value));
             return this;
         }
+
         //==================查询条件-结束==================
 
         //==================聚合操作-开始==================
@@ -167,7 +209,7 @@ public class PromHelper {
          * 聚合操作
          *
          * @param agg    聚合函数
-         * @param isBy 是否使用by，还是用without
+         * @param isBy   是否使用by，还是用without
          * @param labels label列表-可选
          * @return PromSqlBuilder
          */
@@ -234,7 +276,7 @@ public class PromHelper {
          * 函数-带有时间段参数
          *
          * @param functionName 函数名：如ceil、floor、abs
-         * @param duration 时间区间，如5m、1h
+         * @param duration     时间区间，如5m、1h
          * @return PromSqlBuilder
          */
         public PromSqlBuilder fn(String functionName, String duration) {
@@ -251,7 +293,7 @@ public class PromHelper {
         }
 
         public String build() {
-            String promSql = "";
+            String promSql = StrUtil.EMPTY;
             //1.指标名处理
             List<String> metrics = opCaches.stream().filter(MetricOp.class::isInstance).flatMap(op -> Arrays.stream(((MetricOp) op).metric)).collect(Collectors.toList());
             if (metrics.size() == 1) {
@@ -284,7 +326,7 @@ public class PromHelper {
                     }
                 }
             }
-            promSql = promSql.replace(DURATION, "");
+            promSql = promSql.replace(DURATION, StrUtil.EMPTY);
 
             //4.last操作处理
             Optional<LastOp> lastOpList = opCaches.stream().filter(LastOp.class::isInstance).map(LastOp.class::cast).findFirst();

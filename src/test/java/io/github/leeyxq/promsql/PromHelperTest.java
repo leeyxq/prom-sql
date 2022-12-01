@@ -46,6 +46,8 @@ public class PromHelperTest {
                 .eq("rev", "34d0f99")
                 .eq("env", "prod")
                 .notEq("job", "cluster-manager")
+                .eq(false, "instance", "")
+                .notEq(false, "grade", "")
                 .build();
         log.info("promSql = {}", promSql);
         Assert.assertEquals("instance_cpu_time_ns{app=\"lion\", proc=\"web\", rev=\"34d0f99\", env=\"prod\", job!=\"cluster-manager\"}", promSql);
@@ -58,23 +60,11 @@ public class PromHelperTest {
                 .metric("instance_cpu_time_ns")
                 .notEmpty("app")
                 .empty("proc")
+                .notEmpty(false, "aa")
+                .empty(false, "bb")
                 .build();
         log.info("promSql = {}", promSql);
-        Assert.assertEquals( "instance_cpu_time_ns{app!=\"\", proc=\"\"}", promSql);
-    }
-
-    @Test
-    public void testMin() {
-        //min by(type)(avg_over_time(cpu_used{user="001"}[300s] offset 5m))
-        String promSql = PromHelper.sqlBuilder()
-                .metric("cpu_used")
-                .eq("user", "001")
-                .fn("avg_over_time", "300s")
-                .offset("5m")
-                .min("type")
-                .build();
-        log.info("promSql = {}", promSql);
-        Assert.assertEquals("min by(type)(avg_over_time(cpu_used{user=\"001\"}[300s] offset 5m))", promSql);
+        Assert.assertEquals("instance_cpu_time_ns{app!=\"\", proc=\"\"}", promSql);
     }
 
     @Test
@@ -93,9 +83,10 @@ public class PromHelperTest {
         promSql = PromHelper.sqlBuilder()
                 .metric("http_requests_total")
                 .regex("job", ".*server")
+                .regex(false, "url", ".*query")
                 .build();
         log.info("promSql = {}", promSql);
-        Assert.assertEquals( "http_requests_total{job=~\".*server\"}", promSql);
+        Assert.assertEquals("http_requests_total{job=~\".*server\"}", promSql);
     }
 
     @Test
@@ -105,10 +96,25 @@ public class PromHelperTest {
                 .metric("nonexistent")
                 .eq("job", "myjob")
                 .notRegex("instance", ".*")
+                .notRegex(false, "aa", ".*")
                 .absent()
                 .build();
         log.info("promSql = {}", promSql);
         Assert.assertEquals("absent(nonexistent{job=\"myjob\", instance!~\".*\"})", promSql);
+    }
+
+    @Test
+    public void testMin() {
+        //min by(type)(avg_over_time(cpu_used{user="001"}[300s] offset 5m))
+        String promSql = PromHelper.sqlBuilder()
+                .metric("cpu_used")
+                .eq("user", "001")
+                .fn("avg_over_time", "300s")
+                .offset("5m")
+                .min("type")
+                .build();
+        log.info("promSql = {}", promSql);
+        Assert.assertEquals("min by(type)(avg_over_time(cpu_used{user=\"001\"}[300s] offset 5m))", promSql);
     }
 
     @Test

@@ -38,7 +38,7 @@ public class Asserts {
     }
 
     public static void notBlank(String text, String message) {
-        if (StringUtil.isBlank(text)) {
+        if (StrUtil.isBlank(text)) {
             throw new IllegalArgumentException(message);
         }
     }
