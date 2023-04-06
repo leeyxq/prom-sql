@@ -23,93 +23,243 @@
 
 ```java
 
+
 //http_requests_total{job=~".*server"}
-String promSql=PromHelper.sqlBuilder()
+String promSql = PromHelper.sqlBuilder()
         .metric("http_requests_total")
-        .regex("job",".*server")
+        .regex("job", ".*server")
         .build();
-        System.out.println("promSql = "+promSql);
-        Assert.assertEquals(promSql,"http_requests_total{job=~\".*server\"}");
+        
+//sum by(__name__)({__name__=~"cpu_total|cpu_allocated|cpu_used", user="24", cluster="Test01"})
+String promSql = PromHelper.sqlBuilder()
+        .metric("cpu_total", "cpu_allocated", "cpu_used")
+        .eq("user", "24")
+        .eq("cluster", "Test01")
+        .sum("__name__")
+        .build();
+        
+//instance_cpu_time_ns{app="lion", proc="web", rev="34d0f99", env="prod", job!="cluster-manager"}
+String promSql = PromHelper.sqlBuilder()
+        .metric("instance_cpu_time_ns")
+        .eq("app", "lion")
+        .eq("proc", "web")
+        .eq("rev", "34d0f99")
+        .eq("env", "prod")
+        .notEq("job", "cluster-manager")
+        .eq(false, "instance", "")
+        .notEq(false, "grade", "")
+        .build();
+        
+//instance_cpu_time_ns{app!="", proc=""}
+String promSql = PromHelper.sqlBuilder()
+        .metric("instance_cpu_time_ns")
+        .notEmpty("app")
+        .empty("proc")
+        .notEmpty(false, "aa")
+        .empty(false, "bb")
+        .build();
+        
+//absent(nonexistent{job="myjob", instance=~".*"})
+String promSql = PromHelper.sqlBuilder()
+        .metric("nonexistent")
+        .eq("job", "myjob")
+        .regex("instance", ".*")
+        .absent()
+        .build();
+        
+
+//http_requests_total{job=~".*server"}
+promSql = PromHelper.sqlBuilder()
+        .metric("http_requests_total")
+        .regex("job", ".*server")
+        .regex(false, "url", ".*query")
+        .build();
+        
+//absent(nonexistent{job="myjob", instance!~".*"})
+String promSql = PromHelper.sqlBuilder()
+        .metric("nonexistent")
+        .eq("job", "myjob")
+        .notRegex("instance", ".*")
+        .notRegex(false, "aa", ".*")
+        .absent()
+        .build();
+        
+//min by(type)(avg_over_time(cpu_used{user="001"}[300s] offset 5m))
+String promSql = PromHelper.sqlBuilder()
+        .metric("cpu_used")
+        .eq("user", "001")
+        .fn("avg_over_time", "300s")
+        .offset("5m")
+        .min("type")
+        .build();
+        
+//absent_over_time(nonexistent{job="myjob", instance=~".*"}[1h])
+String promSql = PromHelper.sqlBuilder()
+        .metric("nonexistent")
+        .eq("job", "myjob")
+        .regex("instance", ".*")
+        .fn("absent_over_time", "1h")
+        .build();
+        
+//absent_over_time(nonexistent{job="myjob", instance=~".*"}[1h])
+String promSql = PromHelper.sqlBuilder()
+        .metric("nonexistent")
+        .eq("job", "myjob")
+        .regex("instance", ".*")
+        .fn("absent_over_time", "1h")
+        .build();
+        
+//sum without(instance)(http_requests_total)
+String promSql = PromHelper.sqlBuilder()
+        .metric("http_requests_total")
+        .sum(false, "instance")
+        .build();
+        
+//sum(http_requests_total)
+String promSql = PromHelper.sqlBuilder()
+        .metric("http_requests_total")
+        .sum()
+        .build();
+        
+
+// sum by(application, group)(http_requests_total)
+promSql = PromHelper.sqlBuilder()
+        .metric("http_requests_total")
+        .sum("application", "group")
+        .build();
+        
+
+// sum without (instance) (http_requests_total)
+promSql = PromHelper.sqlBuilder()
+        .metric("http_requests_total")
+        .sum(false, "instance")
+        .build();
+        
 
 //sum by(job)(rate(http_requests_total[5m]))
-        promSql=PromHelper.sqlBuilder()
+promSql = PromHelper.sqlBuilder()
         .metric("http_requests_total")
         .rate("5m")
         .sum("job")
         .build();
-        System.out.println("promSql = "+promSql);
-        Assert.assertEquals(promSql,"sum by(job)(rate(http_requests_total[5m]))");
-
-//count by(app)(instance_cpu_time_ns)
-        promSql=PromHelper.sqlBuilder()
-        .metric("instance_cpu_time_ns")
-        .count("app")
+        
+//avg(http_requests_total)
+String promSql = PromHelper.sqlBuilder()
+        .metric("http_requests_total")
+        .avg()
         .build();
-        System.out.println("promSql = "+promSql);
-        Assert.assertEquals(promSql,"count by(app)(instance_cpu_time_ns)");
-
-//instance_cpu_time_ns{app="lion", proc="web", rev="34d0f99", env="prod", job="cluster-manager"}
-        promSql=PromHelper.sqlBuilder()
-        .metric("instance_cpu_time_ns")
-        .eq("app","lion")
-        .eq("proc","web")
-        .eq("rev","34d0f99")
-        .eq("env","prod")
-        .eq("job","cluster-manager")
+        
+//count(http_requests_total)
+String promSql = PromHelper.sqlBuilder()
+        .metric("http_requests_total")
+        .count()
         .build();
-        System.out.println("promSql = "+promSql);
-        Assert.assertEquals(promSql,"instance_cpu_time_ns{app=\"lion\", proc=\"web\", rev=\"34d0f99\", env=\"prod\", job=\"cluster-manager\"}");
-
-//instance_memory_usage_bytes / 1024 / 1024
-        promSql=PromHelper.sqlBuilder()
-        .metric("instance_memory_usage_bytes")
-        .last(" / 1024 / 1024")
+        
+//count_values("job", http_requests_total)
+String promSql = PromHelper.sqlBuilder()
+        .metric("http_requests_total")
+        .countValues("job")
         .build();
-        System.out.println("promSql = "+promSql);
-        Assert.assertEquals(promSql,"instance_memory_usage_bytes / 1024 / 1024");
-
-//sum by (app, proc)(instance_memory_usage_bytes) / 1024 / 1024
-        promSql=PromHelper.sqlBuilder()
-        .metric("instance_memory_usage_bytes")
-        .sum("app","proc")
-        .last(" / 1024 / 1024")
+        
+//topk(10, http_requests_total)
+String promSql = PromHelper.sqlBuilder()
+        .metric("http_requests_total")
+        .topk(10)
         .build();
-        System.out.println("promSql = "+promSql);
-        Assert.assertEquals(promSql,"sum by(app, proc)(instance_memory_usage_bytes) / 1024 / 1024");
-
-
-//sum by(__name__)({__name__=~"queue_cu_total|queue_cu_allocated|queue_cu_used", userId="24", clusterType="online"})
-        promSql=PromHelper.sqlBuilder()
-        .metric("queue_cu_total","queue_cu_allocated","queue_cu_used")
-        .eq("userId","24")
-        .eq("clusterType","online")
-        .sum("__name__")
+        
+        
+//bottomk(10, http_requests_total)
+String promSql = PromHelper.sqlBuilder()
+        .metric("http_requests_total")
+        .bottomk(10)
         .build();
-        System.out.println("promSql = "+promSql);
-        Assert.assertEquals(promSql,"sum by(__name__)({__name__=~\"queue_cu_total|queue_cu_allocated|queue_cu_used\", userId=\"24\", clusterType=\"online\"})");
+        
+//sum(http_requests_total{method="GET"} offset 5m)
+String promSql = PromHelper.sqlBuilder()
+        .metric("http_requests_total")
+        .eq("method", "GET")
+        .offset("5m")
+        .sum()
+        .build();
 
-
-//avg without(cpu)(rate(node_cpu_seconds_total{mode="idle"}[5m]))
-        promSql=PromHelper.sqlBuilder()
-        .metric("node_cpu_seconds_total")
-        .eq("mode","idle")
+//rate(http_requests_total[5m] offset 1w)
+promSql = PromHelper.sqlBuilder()
+        .metric("http_requests_total")
         .rate("5m")
-        .avg(false,"cpu")
+        .offset("1w")
         .build();
-
 
 //rate(http_requests_total[5m] offset -1w)
-        promSql=PromHelper.sqlBuilder()
+promSql = PromHelper.sqlBuilder()
         .metric("http_requests_total")
         .rate("5m")
         .offset("-1w")
         .build();
+        
+//delta(cpu_temp_celsius{host="zeus"}[2h])
+String promSql = PromHelper.sqlBuilder()
+        .metric("cpu_temp_celsius")
+        .delta("2h")
+        .build();
+//max(cpu_temp_celsius{host="zeus"})
+String promSql = PromHelper.sqlBuilder()
+        .metric("cpu_temp_celsius")
+        .eq("host", "zeus")
+        .max()
+        .build();
 
+//max by(host)(cpu_temp_celsius{host!="zeus"})
+promSql = PromHelper.sqlBuilder()
+        .metric("cpu_temp_celsius")
+        .notEq("host", "zeus")
+        .max("host")
+        .build();
 
-//topk(10, http_requests_total)
-        promSql=PromHelper.sqlBuilder()
+//avg without(cpu)(rate(node_cpu_seconds_total{mode="idle"}[5m]))
+promSql = PromHelper.sqlBuilder()
+        .metric("node_cpu_seconds_total")
+        .eq("mode", "idle")
+        .rate("5m")
+        .avg(false, "cpu")
+        .build();
+//irate(http_requests_total{job="api-server"}[5m])
+String promSql = PromHelper.sqlBuilder()
         .metric("http_requests_total")
-        .topk(10)
+        .eq("job", "api-server")
+        .irate("5m")
+        .build();
+        
+//abs(http_requests_total)
+String promSql = PromHelper.sqlBuilder()
+        .metric("http_requests_total")
+        .abs()
+        .build();
+
+//ceil(http_requests_total)
+promSql = PromHelper.sqlBuilder()
+        .metric("http_requests_total")
+        .ceil()
+        .build();
+
+//floor(http_requests_total)
+promSql = PromHelper.sqlBuilder()
+        .metric("http_requests_total")
+        .floor()
+        .build();
+
+
+
+//instance_memory_usage_bytes / 1024 / 1024
+String promSql = PromHelper.sqlBuilder()
+        .metric("instance_memory_usage_bytes")
+        .last(" / 1024 / 1024")
+        .build();
+
+//sum by (app, proc)(instance_memory_usage_bytes) / 1024 / 1024
+promSql = PromHelper.sqlBuilder()
+        .metric("instance_memory_usage_bytes")
+        .sum("app", "proc")
+        .last(" / 1024 / 1024")
         .build();
         
 // 所支持条件查询方法有以下：
