@@ -1,19 +1,18 @@
 package io.github.leeyxq.promsql;
 
 import io.github.leeyxq.promsql.util.Asserts;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import io.github.leeyxq.promsql.util.StrUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * prom查询辅助类
@@ -21,17 +20,15 @@ import lombok.extern.slf4j.Slf4j;
  * @author lixiangqian
  * @since 2022/11/22 14:34
  */
-@Slf4j
 @UtilityClass
 public class PromHelper {
-    public static final String DURATION = "${duration}";
 
     /**
      * 获取一个PromSqlBuilder实例
      *
      * @return PromSqlBuilder实例
      */
-    PromSqlBuilder sqlBuilder() {
+    public static PromSqlBuilder sqlBuilder() {
         return new PromSqlBuilder();
     }
 
@@ -54,6 +51,7 @@ public class PromHelper {
         quantile (calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions)
         */
         private final List<BaseOp> opCaches = new ArrayList<>();
+        private final AtomicInteger durationPlaceholderSeq = new AtomicInteger();
 
         private PromSqlBuilder() {
         }
@@ -187,20 +185,22 @@ public class PromHelper {
         public PromSqlBuilder countValues(String label) {
             //count_values("version", build_version)
             Asserts.notBlank(label, "label is required");
-            opCaches.add(new AggOp("count_values(\"" + label + "\", %s)"));
+            opCaches.add(new AggOp("count_values(\"" + StrUtil.escapeLabelValue(label) + "\", %s)"));
             return this;
         }
 
         public PromSqlBuilder topk(Integer top) {
             //topk(3, sum by (app, proc) (rate(instance_cpu_time_ns[5m])))
             Asserts.notNull(top, "top is required");
+            Asserts.isTrue(top > 0, "top must be greater than 0");
             opCaches.add(new AggOp("topk(" + top + ", %s)"));
             return this;
         }
 
         public PromSqlBuilder bottomk(Integer bottom) {
-            //topk(3, sum by (app, proc) (rate(instance_cpu_time_ns[5m])))
+            //bottomk(3, sum by (app, proc) (rate(instance_cpu_time_ns[5m])))
             Asserts.notNull(bottom, "bottom is required");
+            Asserts.isTrue(bottom > 0, "bottom must be greater than 0");
             opCaches.add(new AggOp("bottomk(" + bottom + ", %s)"));
             return this;
         }
@@ -214,6 +214,7 @@ public class PromHelper {
          * @return PromSqlBuilder
          */
         public PromSqlBuilder agg(String agg, boolean isBy, String... labels) {
+            Asserts.notBlank(agg, "agg must not be empty");
             //<aggr-op> [without|by (<label list>)] ([parameter,] <vector expression>) or  <aggr-op>([parameter,] <vector expression>) [without|by (<label list>)]
             if (labels.length == 0) {
                 opCaches.add(new AggOp(agg + "(%s)"));
@@ -267,6 +268,7 @@ public class PromHelper {
          * @return PromSqlBuilder
          */
         public PromSqlBuilder fn(String functionName) {
+            Asserts.notBlank(functionName, "functionName must not be empty");
             //abs(v instant-vector)
             opCaches.add(new AggOp(functionName + "(%s)"));
             return this;
@@ -280,61 +282,95 @@ public class PromHelper {
          * @return PromSqlBuilder
          */
         public PromSqlBuilder fn(String functionName, String duration) {
-            //delta(cpu_temp_celsius{host="zeus"}[2h])
+            Asserts.notBlank(functionName, "functionName must not be empty");
             Asserts.notBlank(duration, "duration is required");
-            opCaches.add(new DurationAggOp(functionName + "(%s)", duration));
+            String placeholder = "${duration_" + durationPlaceholderSeq.getAndIncrement() + "}";
+            opCaches.add(new DurationAggOp(functionName + "(%s)", duration, placeholder));
             return this;
         }
         //==================函数操作-结束==================
 
         public PromSqlBuilder last(String last) {
+            Asserts.notBlank(last, "last must not be empty");
             opCaches.add(new LastOp(last));
             return this;
         }
 
         public String build() {
-            String promSql = StrUtil.EMPTY;
+            List<BaseOp> ops = new ArrayList<>(opCaches);
+
             //1.指标名处理
-            List<String> metrics = opCaches.stream().filter(MetricOp.class::isInstance).flatMap(op -> Arrays.stream(((MetricOp) op).metric)).collect(Collectors.toList());
+            List<String> metrics = ops.stream()
+                    .filter(MetricOp.class::isInstance)
+                    .flatMap(op -> Arrays.stream(((MetricOp) op).metric))
+                    .collect(Collectors.toList());
+            Asserts.notEmpty(metrics, "metric() must be called before build()");
+
+            String promSql;
             if (metrics.size() == 1) {
                 promSql = metrics.get(0);
             } else {
-                opCaches.add(0, new LabelOp("=~", "__name__", String.join("|", metrics)));
+                ops.add(0, new LabelOp("=~", "__name__", metrics.stream()
+                        .map(StrUtil::escapeRegex)
+                        .collect(Collectors.joining("|"))));
+                promSql = StrUtil.EMPTY;
             }
 
             //2.label条件处理
-            List<String> labels = opCaches.stream().filter(LabelOp.class::isInstance).map(LabelOp.class::cast).map(labelOp -> String.format("%s%s\"%s\"", labelOp.label, labelOp.operator, labelOp.values.length != 0 ? labelOp.values[0] : "")).collect(Collectors.toList());
+            List<String> labels = ops.stream()
+                    .filter(LabelOp.class::isInstance)
+                    .map(LabelOp.class::cast)
+                    .map(labelOp -> String.format("%s%s\"%s\"",
+                            labelOp.label,
+                            labelOp.operator,
+                            StrUtil.escapeLabelValue(labelOp.values.length != 0 ? labelOp.values[0] : "")))
+                    .collect(Collectors.toList());
             if (!labels.isEmpty()) {
                 promSql += "{%s}";
                 promSql = String.format(promSql, String.join(", ", labels));
             }
 
-            promSql += DURATION;
-
-            Optional<OffsetOp> offsetOp = opCaches.stream().filter(OffsetOp.class::isInstance).map(OffsetOp.class::cast).findFirst();
+            Optional<OffsetOp> offsetOp = ops.stream()
+                    .filter(OffsetOp.class::isInstance)
+                    .map(OffsetOp.class::cast)
+                    .findFirst();
             if (offsetOp.isPresent()) {
                 promSql += " offset " + offsetOp.get().offset;
             }
 
             //3.聚合操作处理
-            for (BaseOp baseOp : opCaches) {
+            for (BaseOp baseOp : ops) {
                 if (baseOp instanceof AggOp) {
                     AggOp agg = (AggOp) baseOp;
-                    promSql = String.format(agg.operator, promSql);
                     if (agg instanceof DurationAggOp) {
-                        promSql = promSql.replace(DURATION, "[" + ((DurationAggOp) agg).duration + "]");
+                        DurationAggOp durationAgg = (DurationAggOp) agg;
+                        promSql = insertDurationPlaceholder(promSql, durationAgg.placeholder);
+                        promSql = String.format(durationAgg.operator, promSql);
+                        promSql = promSql.replace(durationAgg.placeholder, "[" + durationAgg.duration + "]");
+                    } else {
+                        promSql = String.format(agg.operator, promSql);
                     }
                 }
             }
-            promSql = promSql.replace(DURATION, StrUtil.EMPTY);
 
             //4.last操作处理
-            Optional<LastOp> lastOpList = opCaches.stream().filter(LastOp.class::isInstance).map(LastOp.class::cast).findFirst();
+            Optional<LastOp> lastOpList = ops.stream()
+                    .filter(LastOp.class::isInstance)
+                    .map(LastOp.class::cast)
+                    .findFirst();
             if (lastOpList.isPresent()) {
                 promSql += lastOpList.get().operator;
             }
 
             return promSql;
+        }
+
+        private static String insertDurationPlaceholder(String promSql, String placeholder) {
+            int offsetIdx = promSql.indexOf(" offset ");
+            if (offsetIdx >= 0) {
+                return promSql.substring(0, offsetIdx) + placeholder + promSql.substring(offsetIdx);
+            }
+            return promSql + placeholder;
         }
 
         @Data
@@ -376,10 +412,13 @@ public class PromHelper {
         private static class DurationAggOp extends AggOp {
             @Getter
             private final String duration;
+            @Getter
+            private final String placeholder;
 
-            DurationAggOp(String operator, String duration) {
+            DurationAggOp(String operator, String duration, String placeholder) {
                 super(operator);
                 this.duration = duration;
+                this.placeholder = placeholder;
             }
         }
 
