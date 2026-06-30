@@ -132,15 +132,52 @@ public class PromHelperTest {
 
     @Test
     public void testAgg() {
-        //absent_over_time(nonexistent{job="myjob", instance=~".*"}[1h])
         String promSql = PromHelper.sqlBuilder()
-                .metric("nonexistent")
-                .eq("job", "myjob")
-                .regex("instance", ".*")
-                .fn("absent_over_time", "1h")
+                .metric("http_requests_total")
+                .agg("stddev", true, "job")
                 .build();
         log.info("promSql = {}", promSql);
-        Assert.assertEquals("absent_over_time(nonexistent{job=\"myjob\", instance=~\".*\"}[1h])", promSql);
+        Assert.assertEquals("stddev by(job)(http_requests_total)", promSql);
+    }
+
+    @Test
+    public void testBuildTwice() {
+        PromHelper.PromSqlBuilder builder = PromHelper.sqlBuilder()
+                .metric("cpu_total", "cpu_allocated", "cpu_used")
+                .eq("user", "24")
+                .sum("__name__");
+        String first = builder.build();
+        String second = builder.build();
+        Assert.assertEquals(first, second);
+        Assert.assertEquals("sum by(__name__)({__name__=~\"cpu_total|cpu_allocated|cpu_used\", user=\"24\"})", first);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMissingMetric() {
+        PromHelper.sqlBuilder()
+                .eq("job", "api")
+                .build();
+    }
+
+    @Test
+    public void testEscapeLabelValue() {
+        String promSql = PromHelper.sqlBuilder()
+                .metric("http_requests_total")
+                .eq("job", "foo\"bar\\baz")
+                .build();
+        log.info("promSql = {}", promSql);
+        Assert.assertEquals("http_requests_total{job=\"foo\\\"bar\\\\baz\"}", promSql);
+    }
+
+    @Test
+    public void testMultipleDurationFunctions() {
+        String promSql = PromHelper.sqlBuilder()
+                .metric("http_requests_total")
+                .rate("5m")
+                .fn("avg_over_time", "1h")
+                .build();
+        log.info("promSql = {}", promSql);
+        Assert.assertEquals("avg_over_time(rate(http_requests_total[5m])[1h])", promSql);
     }
 
     @Test
