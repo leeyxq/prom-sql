@@ -146,7 +146,7 @@
 <body>
   <header>
     <h1>装修平面图修订版</h1>
-    <p>百瑞景中央生活区六期 · F 户型（约 90㎡）· 在原装修方案基础上落实审核修改：卫浴干区保留小半边实墙、不设门；鞋柜加深、老二房收纳精简、电视墙隔音与阳台拆改施工注记。</p>
+    <p>百瑞景中央生活区六期 · F 户型（约 90㎡）· 干区保留小半边实墙不设门；C 房暖气改门后；客厅无暖气片；床头：C 靠北、B 靠南（避卫生间）。</p>
   </header>
 
   <div class="layout">
@@ -256,24 +256,30 @@
           <text x="3600" y="500" text-anchor="middle" font-size="140" font-weight="700">玄关</text>
         </g>
 
-        <!-- ========== 老大房 C ========== -->
+        <!-- ========== 老大房 C：床头靠北；暖气门后 ========== -->
         <g id="room-c">
-          <text x="1515" y="2200" text-anchor="middle" font-size="160" font-weight="700">老大房 C</text>
-          <!-- 床 1350×2000 -->
-          <rect x="200" y="1900" width="1350" height="2000" fill="#f5f1ea" stroke="#1a1f24" stroke-width="18" />
-          <rect x="280" y="1980" width="1190" height="700" fill="#fff" stroke="#1a1f24" stroke-width="12" />
-          <text x="875" y="2900" text-anchor="middle" font-size="110">床 1350×2000</text>
-          <!-- 衣柜 600 -->
-          <rect x="2431" y="1689" width="600" height="2200" fill="#e8e4dc" stroke="#1a1f24" stroke-width="16" />
-          <text x="2731" y="2800" text-anchor="middle" font-size="100" writing-mode="tb">衣柜 600</text>
-          <!-- 挂机 -->
-          <rect x="200" y="1700" width="700" height="140" fill="#1f8a7a" opacity="0.9" />
-          <text x="550" y="1795" text-anchor="middle" font-size="90" fill="#fff">挂机</text>
+          <text x="1515" y="2100" text-anchor="middle" font-size="150" font-weight="700">老大房 C</text>
+          <!-- 床头靠北墙（优于靠西窗）；1350 宽 × 2000 长 -->
+          <rect x="200" y="1720" width="1350" height="2000" fill="rgba(15,107,76,0.10)" stroke="#0f6b4c" stroke-width="22" />
+          <!-- 床头示意（北） -->
+          <rect x="280" y="1780" width="1190" height="220" fill="#fff" stroke="#1a1f24" stroke-width="12" />
+          <text x="875" y="1930" text-anchor="middle" font-size="95" fill="#0f6b4c" font-weight="700">床头靠北</text>
+          <text x="875" y="2800" text-anchor="middle" font-size="105">床 1350×2000</text>
+          <text x="875" y="2950" text-anchor="middle" font-size="85" fill="#0f6b4c">北为厨房共墙·建议隔音</text>
+          <!-- 衣柜 600 靠东 -->
+          <rect x="2431" y="1689" width="600" height="1800" fill="#e8e4dc" stroke="#1a1f24" stroke-width="16" />
+          <text x="2731" y="2600" text-anchor="middle" font-size="100" writing-mode="tb">衣柜 600</text>
+          <!-- 挂机靠西窗上方 -->
+          <rect x="200" y="1589" width="700" height="120" fill="#1f8a7a" opacity="0.9" />
+          <text x="550" y="1675" text-anchor="middle" font-size="85" fill="#fff">挂机</text>
           <!-- 窗 -->
           <rect x="-40" y="2200" width="80" height="900" fill="#b9d7ea" stroke="#3d7ea6" stroke-width="14" />
-          <!-- 暗门 C -->
-          <rect x="3031" y="2800" width="140" height="900" fill="none" stroke="#c45c26" stroke-width="28" stroke-dasharray="50 30" />
-          <text x="3400" y="3250" font-size="100" fill="#c45c26">C 暗门</text>
+          <!-- 暗门 C（东南）+ 门后暖气 -->
+          <rect x="3031" y="3000" width="140" height="900" fill="none" stroke="#c45c26" stroke-width="28" stroke-dasharray="50 30" />
+          <text x="3400" y="3400" font-size="100" fill="#c45c26">C 暗门</text>
+          <path d="M 3031 3900 A 650 650 0 0 0 2380 4005" fill="none" stroke="#1a1f24" stroke-width="16" stroke-dasharray="20 16" />
+          <rect x="2480" y="3820" width="520" height="140" fill="#7a4acb" opacity="0.9" />
+          <text x="2740" y="3920" text-anchor="middle" font-size="90" fill="#fff" font-weight="700">暖气·门后</text>
         </g>
 
         <!-- ========== 卫浴（干区：保留小半边实墙，不设门） ========== -->
@@ -307,37 +313,35 @@
           <text x="1515" y="5550" text-anchor="middle" font-size="140" font-weight="700">卫浴</text>
         </g>
 
-        <!-- ========== 老二房 B（修订：收纳精简） ========== -->
+        <!-- ========== 老二房 B：床头靠南（不宜靠北·卫生间） ========== -->
         <g id="room-b">
-          <text x="1515" y="6200" text-anchor="middle" font-size="160" font-weight="700">老二房 B</text>
-          <!-- 床 1350 — 略北移腾活动区 -->
-          <rect x="200" y="5750" width="1350" height="2000" fill="#f5f1ea" stroke="#1a1f24" stroke-width="18" />
-          <rect x="280" y="5830" width="1190" height="700" fill="#fff" stroke="#1a1f24" stroke-width="12" />
-          <text x="875" y="6750" text-anchor="middle" font-size="110">床 1350×2000</text>
+          <text x="1515" y="5900" text-anchor="middle" font-size="150" font-weight="700">老二房 B</text>
+          <!-- 床头靠南墙（避北侧卫生间）；留北侧活动区 -->
+          <rect x="200" y="5680" width="1350" height="2000" fill="rgba(15,107,76,0.10)" stroke="#0f6b4c" stroke-width="22" />
+          <rect x="280" y="7380" width="1190" height="220" fill="#fff" stroke="#1a1f24" stroke-width="12" />
+          <text x="875" y="7530" text-anchor="middle" font-size="95" fill="#0f6b4c" font-weight="700">床头靠南</text>
+          <text x="875" y="6600" text-anchor="middle" font-size="105">床 1350×2000</text>
+          <text x="875" y="6750" text-anchor="middle" font-size="85" fill="#0f6b4c">不宜靠北（卫生间）</text>
 
-          <!-- 修订：落地玩具架取消 → 壁龛/墙上置物 -->
-          <rect x="200" y="5609" width="900" height="100" fill="rgba(15,107,76,0.2)" stroke="#0f6b4c" stroke-width="16" />
-          <text x="650" y="5685" text-anchor="middle" font-size="85" fill="#0f6b4c">壁挂玩具置物（修订）</text>
+          <!-- 北侧活动区 + 壁挂玩具 -->
+          <rect x="1650" y="5609" width="1050" height="900" fill="none" stroke="#0f6b4c" stroke-width="16" stroke-dasharray="35 25" />
+          <text x="2175" y="6050" text-anchor="middle" font-size="100" fill="#0f6b4c">活动区</text>
+          <rect x="1700" y="5620" width="900" height="100" fill="rgba(15,107,76,0.2)" stroke="#0f6b4c" stroke-width="16" />
+          <text x="2150" y="5695" text-anchor="middle" font-size="80" fill="#0f6b4c">壁挂玩具置物</text>
 
-          <!-- 收纳柜缩为 900×450 -->
-          <rect x="1700" y="7000" width="900" height="450" fill="rgba(15,107,76,0.12)" stroke="#0f6b4c" stroke-width="22" />
-          <text x="2150" y="7200" text-anchor="middle" font-size="95" fill="#0f6b4c">矮柜 900×450</text>
-          <text x="2150" y="7320" text-anchor="middle" font-size="80" fill="#0f6b4c">原 1210×550 缩小</text>
+          <!-- 收纳矮柜 -->
+          <rect x="1700" y="6650" width="900" height="450" fill="rgba(15,107,76,0.12)" stroke="#0f6b4c" stroke-width="22" />
+          <text x="2150" y="6880" text-anchor="middle" font-size="95" fill="#0f6b4c">矮柜 900×450</text>
 
-          <!-- 活动区标注 -->
-          <rect x="1650" y="5750" width="1100" height="1100" fill="none" stroke="#0f6b4c" stroke-width="16" stroke-dasharray="35 25" />
-          <text x="2200" y="6320" text-anchor="middle" font-size="100" fill="#0f6b4c">活动区</text>
-
-          <!-- 衣柜沿东墙薄柜可选 -->
           <rect x="2750" y="5609" width="281" height="2100" fill="#e8e4dc" stroke="#1a1f24" stroke-width="14" />
           <text x="2890" y="6650" text-anchor="middle" font-size="85" writing-mode="tb">薄柜</text>
 
-          <rect x="200" y="5450" width="700" height="140" fill="#1f8a7a" opacity="0.9" />
-          <text x="550" y="5545" text-anchor="middle" font-size="90" fill="#fff">挂机</text>
+          <rect x="200" y="5489" width="700" height="120" fill="#1f8a7a" opacity="0.9" />
+          <text x="550" y="5575" text-anchor="middle" font-size="85" fill="#fff">挂机</text>
           <rect x="-40" y="6000" width="80" height="900" fill="#b9d7ea" stroke="#3d7ea6" stroke-width="14" />
 
-          <rect x="3031" y="6200" width="140" height="900" fill="none" stroke="#c45c26" stroke-width="28" stroke-dasharray="50 30" />
-          <text x="3400" y="6650" font-size="100" fill="#c45c26">B 暗门</text>
+          <rect x="3031" y="5800" width="140" height="900" fill="none" stroke="#c45c26" stroke-width="28" stroke-dasharray="50 30" />
+          <text x="3400" y="6250" font-size="100" fill="#c45c26">B 暗门</text>
         </g>
 
         <!-- ========== 主卧 A ========== -->
@@ -364,6 +368,7 @@
         <!-- ========== 客厅 ========== -->
         <g id="living">
           <text x="5000" y="3200" text-anchor="middle" font-size="180" font-weight="700">客厅</text>
+          <text x="5000" y="3380" text-anchor="middle" font-size="110" fill="#0f6b4c" font-weight="700">客厅无暖气片</text>
 
           <!-- 电视墙 + 隔音注记 -->
           <rect x="3171" y="2800" width="180" height="3200" fill="rgba(15,107,76,0.12)" stroke="#0f6b4c" stroke-width="22" />
@@ -465,12 +470,12 @@
         <span class="tag">本次修订</span>
         <h2>已落实的修改</h2>
         <ol>
-          <li><strong>卫浴干区</strong>：不设门；保留原有小半边实墙作遮挡，干区对走廊开敞；湿区仍独立。</li>
-          <li><strong>玄关鞋柜</strong>：深度 180→350mm（1400×350），可放常规鞋；门后暖气保持 ≥200mm 净距。</li>
-          <li><strong>老二房 B</strong>：取消落地玩具架，改壁挂置物；收纳柜缩为 900×450，腾出活动区。</li>
-          <li><strong>餐厅</strong>：保留 1400×800，建议可伸缩至 1800；标注通行净距 ≥750mm。</li>
-          <li><strong>电视墙</strong>：增加隔音层注记（阻尼板+吸音棉），降低对 B/A 房干扰。</li>
-          <li><strong>阳台</strong>：拆除隔墙与封窗重做处标注「施工前结构确认/报批」。</li>
+          <li><strong>卫浴干区</strong>：不设门；保留原有小半边实墙；湿区仍独立。</li>
+          <li><strong>老大房 C</strong>：暖气改到门后；床头靠北墙（优于靠西窗）；厨房间壁建议隔音。</li>
+          <li><strong>老二房 B</strong>：床头靠南、不宜靠北（北为卫生间）；壁挂玩具+矮柜，留活动区。</li>
+          <li><strong>客厅</strong>：无暖气片（采暖靠风管机等）。</li>
+          <li><strong>玄关鞋柜</strong>：1400×350；门后暖气净距 ≥200mm。</li>
+          <li><strong>电视墙 / 阳台</strong>：隔音层注记；拆改须结构确认报批。</li>
         </ol>
       </div>
 
