@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>装修平面图修订版 · 百瑞景 F 户型</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a1f24;
+      --muted: #5c6670;
+      --paper: #f3efe6;
+      --line: #1a1f24;
+      --exist: #2b2b2b;
+      --change: #0f6b4c;
+      --change-fill: rgba(15, 107, 76, 0.12);
+      --demo: #c45c26;
+      --glass: #3d7ea6;
+      --heat: #7a4acb;
+      --ac: #1f8a7a;
+      --floor: #fffdf8;
+      --note: #8a3b12;
+      --panel: #ffffff;
+      --border: #d7d0c4;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans SC", "IBM Plex Sans", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 0%, #e8dfd0 0%, transparent 55%),
+        radial-gradient(ellipse 60% 40% at 100% 100%, #d9e4dc 0%, transparent 50%),
+        var(--paper);
+      min-height: 100vh;
+    }
+    header {
+      padding: 28px 24px 8px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    header h1 {
+      margin: 0 0 6px;
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      max-width: 52rem;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 20px;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 16px 24px 40px;
+      align-items: start;
+    }
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .plan-wrap {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      overflow: auto;
+      padding: 12px;
+    }
+    svg { display: block; width: 100%; height: auto; }
+    .side {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 16px 16px 14px;
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .card ol, .card ul {
+      margin: 0;
+      padding-left: 1.15rem;
+      font-size: 0.86rem;
+      line-height: 1.55;
+      color: var(--ink);
+    }
+    .card li { margin-bottom: 8px; }
+    .card li strong { color: var(--change); font-weight: 700; }
+    .legend {
+      display: grid;
+      gap: 8px;
+      font-size: 0.84rem;
+    }
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .swatch {
+      width: 28px;
+      height: 12px;
+      flex-shrink: 0;
+      border: 1px solid var(--ink);
+    }
+    .swatch.exist { background: var(--exist); }
+    .swatch.change { background: var(--change); }
+    .swatch.demo { background: var(--demo); }
+    .swatch.glass { background: var(--glass); }
+    .swatch.heat { background: var(--heat); }
+    .swatch.ac { background: var(--ac); }
+    .refs {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .refs a {
+      color: var(--ink);
+      font-size: 0.84rem;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--change);
+      border: 1px solid var(--change);
+      padding: 2px 6px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>装修平面图修订版</h1>
+    <p>百瑞景中央生活区六期 · F 户型（约 90㎡）· 干区保留小半边实墙不设门；C 房暖气改门后；客厅无暖气片；床头：C 靠北、B 靠南（避卫生间）。</p>
+  </header>
+
+  <div class="layout">
+    <div class="plan-wrap">
+      <figure style="margin:0 0 16px;padding:0;">
+        <img src="assets/revised-floor-plan.jpg" alt="装修平面图修订版" style="width:100%;height:auto;display:block;border:1px solid var(--border);" />
+        <figcaption style="margin-top:8px;font-size:0.84rem;color:var(--muted);">修订版平面效果图（下方为可缩放矢量对照图）</figcaption>
+      </figure>
+      <!--
+        坐标系：毫米。原点左上（北）。
+        总宽 6570；竖向分段：厨房 1569 / C房 2436 / 卫 1484 / B房 2328 / 主卧 3197 / 飘窗 762
+        横向：左室 3031 / 走廊 1223 / 客餐 2316
+      -->
+      <svg viewBox="-900 -700 8600 14000" xmlns="http://www.w3.org/2000/svg" aria-label="修订后装修平面图">
+        <defs>
+          <pattern id="hatch" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="12" stroke="#c45c26" stroke-width="2" />
+          </pattern>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#1a1f24" />
+          </marker>
+        </defs>
+
+        <!-- 外轮廓 -->
+        <rect x="0" y="0" width="6570" height="11776" fill="#fffdf8" stroke="#1a1f24" stroke-width="48" />
+
+        <!-- ========== 墙体（既有） ========== -->
+        <!-- 左边外墙已由外轮廓表示；内墙 -->
+        <!-- 厨房/C房分隔 -->
+        <rect x="0" y="1569" width="3031" height="120" fill="#2b2b2b" />
+        <!-- C房/卫分隔 -->
+        <rect x="0" y="4005" width="3031" height="120" fill="#2b2b2b" />
+        <!-- 卫/B房分隔 -->
+        <rect x="0" y="5489" width="3031" height="120" fill="#2b2b2b" />
+        <!-- B房/主卧分隔 -->
+        <rect x="0" y="7817" width="3031" height="120" fill="#2b2b2b" />
+        <!-- 主卧/飘窗分隔（短墙留飘窗开口） -->
+        <rect x="0" y="11014" width="800" height="80" fill="#2b2b2b" />
+        <rect x="2231" y="11014" width="800" height="80" fill="#2b2b2b" />
+
+        <!-- 左右分隔墙（卧室列 | 走廊+客厅） -->
+        <rect x="3031" y="0" width="140" height="11776" fill="#2b2b2b" />
+        <!-- 走廊与客餐厅分隔（局部：厨房南到客厅北一段）——客餐厅开敞，仅玄关侧柜处 -->
+        <!-- 走廊东墙在玄关以南打开到客厅：从 y=1569 起右侧为客餐厅，走廊宽 1223 -->
+        <!-- 客餐厅西侧到卧室列：电视墙在 3031+140 位置 -->
+
+        <!-- 厨房东墙（对玄关）局部开口已在门洞处理 -->
+        <!-- 卫生间湿区隔墙 -->
+        <rect x="0" y="4125" width="1680" height="80" fill="#2b2b2b" opacity="0" />
+
+        <!-- ========== 厨房 ========== -->
+        <g id="kitchen">
+          <!-- L 柜 -->
+          <rect x="120" y="120" width="560" height="1329" fill="#e8e4dc" stroke="#1a1f24" stroke-width="18" />
+          <rect x="120" y="120" width="2791" height="560" fill="#e8e4dc" stroke="#1a1f24" stroke-width="18" />
+          <!-- 水槽 -->
+          <rect x="220" y="280" width="420" height="280" fill="#fff" stroke="#3d7ea6" stroke-width="16" />
+          <text x="430" y="450" text-anchor="middle" font-size="110" fill="#3d7ea6">水槽</text>
+          <!-- 灶台 -->
+          <rect x="2100" y="250" width="520" height="340" rx="20" fill="#fff" stroke="#1a1f24" stroke-width="16" />
+          <circle cx="2260" cy="420" r="70" fill="none" stroke="#1a1f24" stroke-width="14" />
+          <circle cx="2460" cy="420" r="70" fill="none" stroke="#1a1f24" stroke-width="14" />
+          <text x="2360" y="620" text-anchor="middle" font-size="100">灶</text>
+          <!-- 热水器 -->
+          <rect x="2680" y="720" width="220" height="400" fill="#f0f0f0" stroke="#1a1f24" stroke-width="14" />
+          <text x="2790" y="940" text-anchor="middle" font-size="90" writing-mode="tb">热水器</text>
+          <!-- 窗 -->
+          <rect x="-40" y="400" width="80" height="700" fill="#b9d7ea" stroke="#3d7ea6" stroke-width="14" />
+          <text x="1515" y="900" text-anchor="middle" font-size="160" font-weight="700">厨房</text>
+          <!-- 暖气 -->
+          <rect x="700" y="1350" width="500" height="120" fill="#7a4acb" opacity="0.85" />
+        </g>
+
+        <!-- ========== 玄关 / 餐厅 ========== -->
+        <g id="entry-dining">
+          <!-- 入户门（北） -->
+          <path d="M 3400 0 A 700 700 0 0 1 4100 0" fill="none" stroke="#1a1f24" stroke-width="22" />
+          <line x1="3400" y1="0" x2="3400" y2="40" stroke="#1a1f24" stroke-width="40" />
+          <text x="3900" y="-120" text-anchor="middle" font-size="120" font-weight="700">入户</text>
+
+          <!-- 修订：鞋柜 1400×350（原 180） -->
+          <rect x="4800" y="80" width="1400" height="350" fill="rgba(15,107,76,0.14)" stroke="#0f6b4c" stroke-width="28" />
+          <text x="5500" y="250" text-anchor="middle" font-size="110" font-weight="700" fill="#0f6b4c">鞋柜 1400×350</text>
+          <text x="5500" y="370" text-anchor="middle" font-size="90" fill="#0f6b4c">修订加深（原180）</text>
+
+          <!-- 门后暖气，保持散热净距 -->
+          <rect x="3180" y="80" width="180" height="520" fill="#7a4acb" opacity="0.85" />
+          <text x="3270" y="700" text-anchor="middle" font-size="80" fill="#7a4acb">暖气</text>
+          <text x="3270" y="800" text-anchor="middle" font-size="72" fill="#8a3b12">净距≥200</text>
+
+          <!-- 零嵌冰箱 -->
+          <rect x="3171" y="900" width="700" height="700" fill="#e8e4dc" stroke="#1a1f24" stroke-width="18" />
+          <text x="3521" y="1280" text-anchor="middle" font-size="110" font-weight="600">零嵌冰箱</text>
+
+          <!-- 侧柜 600 -->
+          <rect x="4200" y="80" width="550" height="600" fill="#e8e4dc" stroke="#1a1f24" stroke-width="16" />
+          <text x="4475" y="400" text-anchor="middle" font-size="100">侧柜</text>
+          <text x="4475" y="520" text-anchor="middle" font-size="90">600深</text>
+
+          <!-- 餐桌：可伸缩，标注净距 -->
+          <rect x="4300" y="1200" width="1400" height="800" fill="rgba(15,107,76,0.08)" stroke="#0f6b4c" stroke-width="22" stroke-dasharray="40 24" />
+          <text x="5000" y="1550" text-anchor="middle" font-size="120" font-weight="700" fill="#0f6b4c">餐桌 1400×800</text>
+          <text x="5000" y="1700" text-anchor="middle" font-size="95" fill="#0f6b4c">建议可伸缩至 1800</text>
+          <text x="5000" y="1820" text-anchor="middle" font-size="90" fill="#0f6b4c">边距 ≥750</text>
+
+          <text x="5000" y="700" text-anchor="middle" font-size="170" font-weight="700">餐厅</text>
+          <text x="3600" y="500" text-anchor="middle" font-size="140" font-weight="700">玄关</text>
+        </g>
+
+        <!-- ========== 老大房 C：床头靠北；暖气门后 ========== -->
+        <g id="room-c">
+          <text x="1515" y="2100" text-anchor="middle" font-size="150" font-weight="700">老大房 C</text>
+          <!-- 床头靠北墙（优于靠西窗）；1350 宽 × 2000 长 -->
+          <rect x="200" y="1720" width="1350" height="2000" fill="rgba(15,107,76,0.10)" stroke="#0f6b4c" stroke-width="22" />
+          <!-- 床头示意（北） -->
+          <rect x="280" y="1780" width="1190" height="220" fill="#fff" stroke="#1a1f24" stroke-width="12" />
+          <text x="875" y="1930" text-anchor="middle" font-size="95" fill="#0f6b4c" font-weight="700">床头靠北</text>
+          <text x="875" y="2800" text-anchor="middle" font-size="105">床 1350×2000</text>
+          <text x="875" y="2950" text-anchor="middle" font-size="85" fill="#0f6b4c">北为厨房共墙·建议隔音</text>
+          <!-- 衣柜 600 靠东 -->
+          <rect x="2431" y="1689" width="600" height="1800" fill="#e8e4dc" stroke="#1a1f24" stroke-width="16" />
+          <text x="2731" y="2600" text-anchor="middle" font-size="100" writing-mode="tb">衣柜 600</text>
+          <!-- 挂机靠西窗上方 -->
+          <rect x="200" y="1589" width="700" height="120" fill="#1f8a7a" opacity="0.9" />
+          <text x="550" y="1675" text-anchor="middle" font-size="85" fill="#fff">挂机</text>
+          <!-- 窗 -->
+          <rect x="-40" y="2200" width="80" height="900" fill="#b9d7ea" stroke="#3d7ea6" stroke-width="14" />
+          <!-- 暗门 C（东南）+ 门后暖气 -->
+          <rect x="3031" y="3000" width="140" height="900" fill="none" stroke="#c45c26" stroke-width="28" stroke-dasharray="50 30" />
+          <text x="3400" y="3400" font-size="100" fill="#c45c26">C 暗门</text>
+          <path d="M 3031 3900 A 650 650 0 0 0 2380 4005" fill="none" stroke="#1a1f24" stroke-width="16" stroke-dasharray="20 16" />
+          <rect x="2480" y="3820" width="520" height="140" fill="#7a4acb" opacity="0.9" />
+          <text x="2740" y="3920" text-anchor="middle" font-size="90" fill="#fff" font-weight="700">暖气·门后</text>
+        </g>
+
+        <!-- ========== 卫浴（干区：保留小半边实墙，不设门） ========== -->
+        <g id="bath">
+          <!-- 湿区 -->
+          <rect x="120" y="4200" width="1750" height="1200" fill="#eef6f8" stroke="#1a1f24" stroke-width="18" />
+          <text x="995" y="4450" text-anchor="middle" font-size="130" font-weight="700">湿区</text>
+          <!-- 淋浴 -->
+          <rect x="200" y="4550" width="700" height="700" fill="none" stroke="#3d7ea6" stroke-width="16" stroke-dasharray="30 20" />
+          <text x="550" y="4930" text-anchor="middle" font-size="100">淋浴</text>
+          <!-- 壁挂马桶 -->
+          <ellipse cx="1400" cy="5000" rx="180" ry="280" fill="#fff" stroke="#1a1f24" stroke-width="16" />
+          <text x="1400" y="5350" text-anchor="middle" font-size="90">壁挂马桶</text>
+          <!-- 湿区门 -->
+          <path d="M 1870 4300 A 500 500 0 0 1 1870 4800" fill="none" stroke="#1a1f24" stroke-width="18" />
+
+          <!-- 干区：对走廊开敞，北侧保留小半边实墙，不设门 -->
+          <rect x="1950" y="4200" width="1081" height="1200" fill="#f7f5f0" stroke="#1a1f24" stroke-width="18" />
+          <text x="2490" y="4450" text-anchor="middle" font-size="130" font-weight="700">干区</text>
+          <!-- 台盆 -->
+          <rect x="2100" y="4550" width="800" height="480" fill="#fff" stroke="#1a1f24" stroke-width="16" />
+          <text x="2500" y="4780" text-anchor="middle" font-size="95">台盆+镜柜</text>
+          <text x="2500" y="4900" text-anchor="middle" font-size="85">1020×480</text>
+
+          <!-- 原有小半边实墙（走廊侧北端矮/短墙，开口朝南，无门） -->
+          <rect x="3031" y="4125" width="140" height="520" fill="#2b2b2b" />
+          <rect x="2900" y="4125" width="271" height="120" fill="#2b2b2b" />
+          <text x="3550" y="4350" font-size="105" font-weight="700" fill="#0f6b4c">保留小半边实墙</text>
+          <text x="3550" y="4480" font-size="95" fill="#0f6b4c">干区不设门（开敞）</text>
+
+          <text x="1515" y="5550" text-anchor="middle" font-size="140" font-weight="700">卫浴</text>
+        </g>
+
+        <!-- ========== 老二房 B：床头靠南（不宜靠北·卫生间） ========== -->
+        <g id="room-b">
+          <text x="1515" y="5900" text-anchor="middle" font-size="150" font-weight="700">老二房 B</text>
+          <!-- 床头靠南墙（避北侧卫生间）；留北侧活动区 -->
+          <rect x="200" y="5680" width="1350" height="2000" fill="rgba(15,107,76,0.10)" stroke="#0f6b4c" stroke-width="22" />
+          <rect x="280" y="7380" width="1190" height="220" fill="#fff" stroke="#1a1f24" stroke-width="12" />
+          <text x="875" y="7530" text-anchor="middle" font-size="95" fill="#0f6b4c" font-weight="700">床头靠南</text>
+          <text x="875" y="6600" text-anchor="middle" font-size="105">床 1350×2000</text>
+          <text x="875" y="6750" text-anchor="middle" font-size="85" fill="#0f6b4c">不宜靠北（卫生间）</text>
+
+          <!-- 北侧活动区 + 壁挂玩具 -->
+          <rect x="1650" y="5609" width="1050" height="900" fill="none" stroke="#0f6b4c" stroke-width="16" stroke-dasharray="35 25" />
+          <text x="2175" y="6050" text-anchor="middle" font-size="100" fill="#0f6b4c">活动区</text>
+          <rect x="1700" y="5620" width="900" height="100" fill="rgba(15,107,76,0.2)" stroke="#0f6b4c" stroke-width="16" />
+          <text x="2150" y="5695" text-anchor="middle" font-size="80" fill="#0f6b4c">壁挂玩具置物</text>
+
+          <!-- 收纳矮柜 -->
+          <rect x="1700" y="6650" width="900" height="450" fill="rgba(15,107,76,0.12)" stroke="#0f6b4c" stroke-width="22" />
+          <text x="2150" y="6880" text-anchor="middle" font-size="95" fill="#0f6b4c">矮柜 900×450</text>
+
+          <rect x="2750" y="5609" width="281" height="2100" fill="#e8e4dc" stroke="#1a1f24" stroke-width="14" />
+          <text x="2890" y="6650" text-anchor="middle" font-size="85" writing-mode="tb">薄柜</text>
+
+          <rect x="200" y="5489" width="700" height="120" fill="#1f8a7a" opacity="0.9" />
+          <text x="550" y="5575" text-anchor="middle" font-size="85" fill="#fff">挂机</text>
+          <rect x="-40" y="6000" width="80" height="900" fill="#b9d7ea" stroke="#3d7ea6" stroke-width="14" />
+
+          <rect x="3031" y="5800" width="140" height="900" fill="none" stroke="#c45c26" stroke-width="28" stroke-dasharray="50 30" />
+          <text x="3400" y="6250" font-size="100" fill="#c45c26">B 暗门</text>
+        </g>
+
+        <!-- ========== 主卧 A ========== -->
+        <g id="room-a">
+          <text x="1515" y="8600" text-anchor="middle" font-size="160" font-weight="700">主卧 A</text>
+          <!-- 床 1800，床架≤1850 -->
+          <rect x="200" y="8200" width="1800" height="2000" fill="#f5f1ea" stroke="#1a1f24" stroke-width="18" />
+          <rect x="300" y="8300" width="1600" height="800" fill="#fff" stroke="#1a1f24" stroke-width="12" />
+          <text x="1100" y="9200" text-anchor="middle" font-size="110">床 1.8m · 架≤1850</text>
+          <!-- 通顶衣柜 -->
+          <rect x="2150" y="7937" width="881" height="2880" fill="#e8e4dc" stroke="#1a1f24" stroke-width="16" />
+          <text x="2590" y="9400" text-anchor="middle" font-size="110" writing-mode="tb">通顶衣柜 2880×550</text>
+          <rect x="200" y="8000" width="700" height="140" fill="#1f8a7a" opacity="0.9" />
+          <text x="550" y="8095" text-anchor="middle" font-size="90" fill="#fff">挂机</text>
+          <rect x="-40" y="8800" width="80" height="1200" fill="#b9d7ea" stroke="#3d7ea6" stroke-width="14" />
+          <rect x="3031" y="9000" width="140" height="900" fill="none" stroke="#c45c26" stroke-width="28" stroke-dasharray="50 30" />
+          <text x="3400" y="9450" font-size="100" fill="#c45c26">A 暗门</text>
+
+          <!-- 飘窗梳妆 -->
+          <rect x="800" y="11094" width="1431" height="682" fill="#f0ebe3" stroke="#1a1f24" stroke-width="16" />
+          <text x="1515" y="11450" text-anchor="middle" font-size="120" font-weight="600">飘窗梳妆（无椅）</text>
+        </g>
+
+        <!-- ========== 客厅 ========== -->
+        <g id="living">
+          <text x="5000" y="3200" text-anchor="middle" font-size="180" font-weight="700">客厅</text>
+          <text x="5000" y="3380" text-anchor="middle" font-size="110" fill="#0f6b4c" font-weight="700">客厅无暖气片</text>
+
+          <!-- 电视墙 + 隔音注记 -->
+          <rect x="3171" y="2800" width="180" height="3200" fill="rgba(15,107,76,0.12)" stroke="#0f6b4c" stroke-width="22" />
+          <rect x="3351" y="3600" width="80" height="1200" fill="#1a1f24" />
+          <text x="3600" y="4100" font-size="110" font-weight="700">55″ TV</text>
+          <text x="3600" y="4250" font-size="95" fill="#0f6b4c">电视墙隔音层</text>
+          <text x="3600" y="4380" font-size="85" fill="#0f6b4c">（阻尼+吸音棉）</text>
+
+          <!-- 沙发 2500×900 靠东墙 -->
+          <rect x="5500" y="3400" width="900" height="2500" fill="#e8e4dc" stroke="#1a1f24" stroke-width="18" />
+          <text x="5950" y="4650" text-anchor="middle" font-size="110" writing-mode="tb">沙发 2500×900</text>
+
+          <!-- 茶几 -->
+          <rect x="4700" y="4100" width="600" height="900" fill="#fff" stroke="#1a1f24" stroke-width="14" />
+
+          <!-- 风管机与送回风 -->
+          <rect x="3600" y="6800" width="2200" height="280" fill="#1f8a7a" opacity="0.85" />
+          <text x="4700" y="6980" text-anchor="middle" font-size="110" fill="#fff" font-weight="600">风管机（阳台梁下）</text>
+          <circle cx="3900" cy="7300" r="70" fill="none" stroke="#1f8a7a" stroke-width="16" />
+          <circle cx="4300" cy="7300" r="70" fill="none" stroke="#1f8a7a" stroke-width="16" />
+          <circle cx="4700" cy="7300" r="70" fill="none" stroke="#1f8a7a" stroke-width="16" />
+          <text x="4300" y="7480" text-anchor="middle" font-size="90" fill="#1f8a7a">送风</text>
+          <rect x="5200" y="7220" width="400" height="160" fill="none" stroke="#1f8a7a" stroke-width="16" />
+          <text x="5400" y="7480" text-anchor="middle" font-size="90" fill="#1f8a7a">回风</text>
+        </g>
+
+        <!-- ========== 阳台：按原图 — 左右短墙各 600，开口 ≈2340 ========== -->
+        <g id="balcony">
+          <!-- 左短墙 600 -->
+          <rect x="3171" y="7700" width="600" height="220" fill="#2b2b2b" />
+          <text x="3471" y="7640" text-anchor="middle" font-size="105" font-weight="700">短墙 600</text>
+          <!-- 开口 ≈2340 -->
+          <line x1="3771" y1="7810" x2="6111" y2="7810" stroke="#1a1f24" stroke-width="10" stroke-dasharray="50 28" />
+          <text x="4941" y="7640" text-anchor="middle" font-size="105">开口 ≈2340</text>
+          <!-- 风管机隔墙吊顶（原图） -->
+          <rect x="3850" y="7720" width="2180" height="160" fill="none" stroke="#1f8a7a" stroke-width="18" stroke-dasharray="40 24" />
+          <text x="4941" y="7830" text-anchor="middle" font-size="90" fill="#1f8a7a" font-weight="600">风管机 隔墙吊顶</text>
+          <!-- 右短墙 600 -->
+          <rect x="6111" y="7700" width="459" height="220" fill="#2b2b2b" />
+          <text x="6340" y="7640" text-anchor="middle" font-size="105" font-weight="700">短墙 600</text>
+
+          <rect x="3171" y="7920" width="3399" height="3856" fill="#fffdf8" stroke="#1a1f24" stroke-width="22" />
+          <text x="4800" y="8300" text-anchor="middle" font-size="160" font-weight="700">阳台</text>
+
+          <!-- 洗烘 -->
+          <rect x="3300" y="8500" width="600" height="656" fill="#e8e4dc" stroke="#1a1f24" stroke-width="16" />
+          <text x="3600" y="8850" text-anchor="middle" font-size="100">洗烘叠放</text>
+          <text x="3600" y="8980" text-anchor="middle" font-size="85">600×656</text>
+
+          <!-- 水槽柜 -->
+          <rect x="4000" y="8500" width="790" height="600" fill="#e8e4dc" stroke="#1a1f24" stroke-width="16" />
+          <text x="4395" y="8820" text-anchor="middle" font-size="100">水槽柜</text>
+
+          <!-- 阅读角 -->
+          <rect x="5200" y="8600" width="1100" height="1400" fill="none" stroke="#1a1f24" stroke-width="16" stroke-dasharray="40 25" />
+          <text x="5750" y="9300" text-anchor="middle" font-size="120" font-weight="600">阅读角</text>
+
+          <!-- 封窗重做 -->
+          <rect x="3171" y="11650" width="3399" height="126" fill="#b9d7ea" stroke="#0f6b4c" stroke-width="20" />
+          <text x="4800" y="11550" text-anchor="middle" font-size="105" fill="#0f6b4c" font-weight="700">外窗封窗拆除重做 · 施工前报批</text>
+        </g>
+
+        <!-- ========== 走廊 ========== -->
+        <text x="3640" y="2500" text-anchor="middle" font-size="120" fill="#5c6670">走廊</text>
+        <text x="3640" y="2500" transform="rotate(-90 3640 2500)" text-anchor="middle" font-size="120" fill="#5c6670" opacity="0">走廊</text>
+
+        <!-- ========== 尺寸标注 ========== -->
+        <g fill="#1a1f24" font-size="110" font-family="IBM Plex Sans, sans-serif">
+          <!-- 顶宽 -->
+          <line x1="0" y1="-350" x2="3031" y2="-350" stroke="#1a1f24" stroke-width="12" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+          <text x="1515" y="-420" text-anchor="middle">3031</text>
+          <line x1="3031" y1="-350" x2="4254" y2="-350" stroke="#1a1f24" stroke-width="12" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+          <text x="3642" y="-420" text-anchor="middle">1223</text>
+          <line x1="4254" y1="-350" x2="6570" y2="-350" stroke="#1a1f24" stroke-width="12" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+          <text x="5412" y="-420" text-anchor="middle">2316</text>
+          <text x="3285" y="-560" text-anchor="middle" font-size="130" font-weight="700">总宽 6570</text>
+
+          <!-- 左侧竖向 -->
+          <line x1="-400" y1="0" x2="-400" y2="1569" stroke="#1a1f24" stroke-width="12" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+          <text x="-520" y="800" text-anchor="middle" transform="rotate(-90 -520 800)">1569</text>
+          <line x1="-400" y1="1569" x2="-400" y2="4005" stroke="#1a1f24" stroke-width="12" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+          <text x="-520" y="2800" text-anchor="middle" transform="rotate(-90 -520 2800)">2436</text>
+          <line x1="-400" y1="4005" x2="-400" y2="5489" stroke="#1a1f24" stroke-width="12" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+          <text x="-520" y="4750" text-anchor="middle" transform="rotate(-90 -520 4750)">1484</text>
+          <line x1="-400" y1="5489" x2="-400" y2="7817" stroke="#1a1f24" stroke-width="12" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+          <text x="-520" y="6650" text-anchor="middle" transform="rotate(-90 -520 6650)">2328</text>
+          <line x1="-400" y1="7817" x2="-400" y2="11014" stroke="#1a1f24" stroke-width="12" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+          <text x="-520" y="9400" text-anchor="middle" transform="rotate(-90 -520 9400)">3197</text>
+          <line x1="-400" y1="11014" x2="-400" y2="11776" stroke="#1a1f24" stroke-width="12" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+          <text x="-520" y="11400" text-anchor="middle" transform="rotate(-90 -520 11400)">762</text>
+        </g>
+
+        <!-- 指北针 -->
+        <g transform="translate(7200, 200)">
+          <circle cx="0" cy="0" r="220" fill="none" stroke="#1a1f24" stroke-width="16" />
+          <polygon points="0,-160 50,80 -50,80" fill="#1a1f24" />
+          <text y="280" text-anchor="middle" font-size="140" font-weight="700">N</text>
+        </g>
+
+        <!-- 图名 -->
+        <text x="3285" y="12500" text-anchor="middle" font-size="160" font-weight="700">装修平面图 · 修订版</text>
+        <text x="3285" y="12720" text-anchor="middle" font-size="110" fill="#5c6670">绿色标注 = 本次按审核意见修改 · 橙色虚线 = 暗门/拆除</text>
+      </svg>
+    </div>
+
+    <aside class="side">
+      <div class="card">
+        <span class="tag">本次修订</span>
+        <h2>已落实的修改</h2>
+        <ol>
+          <li><strong>卫浴干区</strong>：不设门；保留原有小半边实墙；湿区仍独立。</li>
+          <li><strong>老大房 C</strong>：暖气改到门后；床头靠北墙（优于靠西窗）；厨房间壁建议隔音。</li>
+          <li><strong>老二房 B</strong>：床头靠南、不宜靠北（北为卫生间）；壁挂玩具+矮柜，留活动区。</li>
+          <li><strong>客厅</strong>：无暖气片（采暖靠风管机等）。</li>
+          <li><strong>玄关鞋柜</strong>：1400×350；门后暖气净距 ≥200mm。</li>
+          <li><strong>客厅→阳台</strong>：按原图，左右各<strong>短墙 600</strong>，中部开口 ≈2340，上为风管机隔墙吊顶。</li>
+          <li><strong>电视墙</strong>：隔音层注记；阳台外窗封窗重做须报批。</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h2>图例</h2>
+        <div class="legend">
+          <div class="legend-row"><span class="swatch exist"></span>既有/承重墙</div>
+          <div class="legend-row"><span class="swatch change"></span>本次修订</div>
+          <div class="legend-row"><span class="swatch demo"></span>暗门 / 拆除</div>
+          <div class="legend-row"><span class="swatch glass"></span>窗 / 玻璃</div>
+          <div class="legend-row"><span class="swatch heat"></span>暖气</div>
+          <div class="legend-row"><span class="swatch ac"></span>空调</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>对照原图</h2>
+        <div class="refs">
+          <a href="assets/original-renovation.jpg" target="_blank" rel="noopener">原装修方案平面图</a>
+          <a href="assets/developer-plan.jpg" target="_blank" rel="noopener">开发商 F 户型原图</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>施工前仍须确认</h2>
+        <ul>
+          <li>阳台隔墙及外窗是否非承重、物业是否允许拆改。</li>
+          <li>电视墙基层做法与插座点位。</li>
+          <li>三台挂机 + 风管机电路负荷。</li>
+          <li>1.8m 床垫与沙发进户转弯净宽实测。</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</body>
+</html>
